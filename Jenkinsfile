@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     properties([pipelineTriggers([pollSCM('30 * * * *')])])
-                    git 'https://github.com/SanclerZanella/devops_project.git'
+                    checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/SanclerZanella/git_class.git']]])
                 }
             }
         }
