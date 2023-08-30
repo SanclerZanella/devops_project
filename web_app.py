@@ -1,3 +1,5 @@
+import os
+import signal
 from flask import Flask
 import requests
 
@@ -18,6 +20,15 @@ def get_user_data(user_id):
 
     except Exception as e:
         return f"<h1 id='user'>No such user: {user_id}</h1>"
+
+
+@app.route('/stop_server')
+def stop_server():
+    try:
+        os.kill(os.getpid(), signal.CTRL_C_EVENT)
+        return 'Server Stopped'
+    except Exception as e:
+        return f'Error stopping server: {e}'
 
 
 if __name__ == '__main__':

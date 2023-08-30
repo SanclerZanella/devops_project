@@ -1,7 +1,12 @@
 import datetime
+import os
+
 import pymysql
+import signal
 from flask import Flask, jsonify, request
 from db_connector import ConnectDB
+from tables_generator import CreateTables
+from pypika import Query, Table
 
 app = Flask(__name__)
 
@@ -16,26 +21,33 @@ def resta_app(user_id):
         response = {"Status": "ERROR", "reason": f'{e}'}
         return jsonify(response), 500
 
+    table_generator = CreateTables(db_conn)
+    table_generator.create_table()
+
     if request.method == "POST":
         try:
             with db_conn.cursor() as cursor:
-                select_query = "SELECT user_id FROM users WHERE user_id = %s"
-                cursor.execute(select_query, (user_id,))
-                user = cursor.fetchone()
+                while True:
+                    select_query = "SELECT user_id FROM users WHERE user_id = %s"
+                    cursor.execute(select_query, (user_id,))
 
-            if user:
-                raise UserAlreadyExists("Id already exists")
-            else:
-                data = request.get_json()
-                user_name = data.get('user_name')
+                    if cursor.fetchone():
+                        user_id_int = int(user_id)
+                        user_id_int += 1
+                        user_id = str(user_id_int)
+                    else:
+                        break
 
-                with db_conn.cursor() as cursor:
-                    insert_query = "INSERT INTO users (user_id, user_name, creation_date) VALUES (%s, %s, %s)"
-                    cursor.execute(insert_query, (user_id, user_name, datetime.datetime.now()))
-                    db_conn.commit()
+            data = request.get_json()
+            user_name = data.get('user_name')
 
-                response = {"Status": "OK", "User_added": f"{user_name}"}
-                return jsonify(response), 200
+            with db_conn.cursor() as cursor:
+                insert_query = "INSERT INTO users (user_id, user_name, creation_date) VALUES (%s, %s, %s)"
+                cursor.execute(insert_query, (user_id, user_name, datetime.datetime.now()))
+                db_conn.commit()
+
+            response = {"Status": "OK", "User_added": f"{user_name}"}
+            return jsonify(response), 200
 
         except pymysql.Error as e:
             response = {"Status": "ERROR", "reason": f'{e}'}
@@ -137,6 +149,15 @@ def resta_app(user_id):
 
         except Exception as e:
             return f"General error - {e}"
+
+
+@app.route('/stop_server')
+def stop_server():
+    try:
+        os.kill(os.getpid(), signal.CTRL_C_EVENT)
+        return 'Server Stopped'
+    except Exception as e:
+        return f'Error stopping server: {e}'
 
 
 class UserAlreadyExists(Exception):
