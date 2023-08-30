@@ -9,7 +9,7 @@ pipeline {
         stage('checkout') {
             steps {
                 script {
-                    properties([pipelineTriggers([pollSCM('30 * * * *')])])
+                    properties([pipelineTriggers([pollSCM('H/5 * * * *')])])
                     checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/SanclerZanella/git_class.git']]])
                 }
             }
