@@ -10,11 +10,7 @@ pipeline {
             steps {
                 script {
                     properties([pipelineTriggers([pollSCM('30 * * * *')])])
-                }
-                steps {
-                    script {
-                        git 'https://github.com/SanclerZanella/devops_project.git'
-                    }
+                    git 'https://github.com/SanclerZanella/devops_project.git'
                 }
             }
         }
