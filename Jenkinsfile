@@ -89,20 +89,34 @@ pipeline {
 
     post {
         success {
-            script {
-                emailext subject: "${EMAIL_SUBJECT}Successful",
-                          body: "The Jenkins pipeline completed successfully.",
-                          to: "${EMAIL_RECIPIENTS}"
-            }
+            emailext (
+                to: '${EMAIL_RECIPIENTS}',
+                subject: "${EMAIL_SUBJECT}Successful",
+                body: 'The Jenkins pipeline completed successfully.',
+                mimeType: 'text/plain',
+                replyTo: '${EMAIL_RECIPIENTS}',
+                attachLog: true,
+                compressLog: true,
+                recipientProviders: [[$class: 'CulpritsRecipientProvider']],
+                attachBuildLog: true,
+                presendScript: 'import jenkins.plugins.mailer.tasks.MimeMessageBuilder\n\nmsg.setContent(msg.getContent(), "text/html")',
+                from: '${EMAIL_RECIPIENTS}'
+            )
         }
         failure {
-            script {
-                emailext subject: "${EMAIL_SUBJECT}Failed",
-                          body: "The Jenkins pipeline failed. Please investigate.",
-                          to: "${EMAIL_RECIPIENTS}",
-                          attachBuildLog: true,
-                          attachmentsPattern: '**/build.log'
-            }
+            emailext (
+                to: '${EMAIL_RECIPIENTS}',
+                subject: "${EMAIL_SUBJECT}Failed",
+                body: 'Please check the Jenkins build status.',
+                mimeType: 'text/plain',
+                replyTo: '${EMAIL_RECIPIENTS}',
+                attachLog: true,
+                compressLog: true,
+                recipientProviders: [[$class: 'CulpritsRecipientProvider']],
+                attachBuildLog: true,
+                presendScript: 'import jenkins.plugins.mailer.tasks.MimeMessageBuilder\n\nmsg.setContent(msg.getContent(), "text/html")',
+                from: '${EMAIL_RECIPIENTS}'
+            )
         }
     }
 }
