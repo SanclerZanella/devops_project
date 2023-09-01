@@ -98,7 +98,6 @@ pipeline {
                 attachLog: true,
                 compressLog: true,
                 recipientProviders: [[$class: 'CulpritsRecipientProvider']],
-                attachBuildLog: true,
                 presendScript: 'import jenkins.plugins.mailer.tasks.MimeMessageBuilder\n\nmsg.setContent(msg.getContent(), "text/html")',
                 from: '${EMAIL_RECIPIENTS}'
             )
@@ -113,7 +112,6 @@ pipeline {
                 attachLog: true,
                 compressLog: true,
                 recipientProviders: [[$class: 'CulpritsRecipientProvider']],
-                attachBuildLog: true,
                 presendScript: 'import jenkins.plugins.mailer.tasks.MimeMessageBuilder\n\nmsg.setContent(msg.getContent(), "text/html")',
                 from: '${EMAIL_RECIPIENTS}'
             )
