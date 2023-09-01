@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        EMAIL_SUBJECT = 'Pipeline Status: '
+        EMAIL_RECIPIENTS = 'sanclerzjj@gmail.com'
+    }
+
     options {
         buildDiscarder(logRotator(numToKeepStr: '20', daysToKeepStr: '5'))
     }
@@ -78,6 +83,25 @@ pipeline {
                         sh 'nohup python clean_environment.py &'
                     }
                 }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                emailext subject: "${EMAIL_SUBJECT}Successful",
+                          body: "The Jenkins pipeline completed successfully.",
+                          to: "${EMAIL_RECIPIENTS}"
+            }
+        }
+        failure {
+            script {
+                emailext subject: "${EMAIL_SUBJECT}Failed",
+                          body: "The Jenkins pipeline failed. Please investigate.",
+                          to: "${EMAIL_RECIPIENTS}",
+                          attachBuildLog: true,
+                          attachmentsPattern: '**/build.log'
             }
         }
     }
