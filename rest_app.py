@@ -1,6 +1,6 @@
 import datetime
 import os
-
+import sys
 import pymysql
 import signal
 from flask import Flask, jsonify, request
@@ -10,11 +10,19 @@ from pypika import Query, Table
 
 app = Flask(__name__)
 
+# Check if the script was provided with the correct number of command-line arguments
+if len(sys.argv) != 3:
+    print("Usage: python script.py <db_username> <db_password>")
+    sys.exit(1)
+
+db_username = sys.argv[1]
+db_password = sys.argv[2]
+
 
 @app.route('/users/<user_id>', methods=["GET", "POST", "PUT", "DELETE"])
 def resta_app(user_id):
     try:
-        db = ConnectDB()
+        db = ConnectDB(db_username, db_password)
         db_conn = db.connect_db()
 
     except pymysql.Error as e:

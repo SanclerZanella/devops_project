@@ -4,10 +4,10 @@ if os.path.exists('env.py'):
     import env
 
 class ConnectDB:
-    def __init__(self):
+    def __init__(self, username, password):
         self.db_host = os.getenv("DB_HOST")
-        self.db_user = os.getenv("DB_USER")
-        self.db_password = os.getenv("DB_PASSWORD")
+        self.db_user = username
+        self.db_password = password
         self.db_name = os.getenv("DB_NAME")
 
     def connect_db(self):
