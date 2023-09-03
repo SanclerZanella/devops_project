@@ -168,6 +168,12 @@ def stop_server():
         return f'Error stopping server: {e}'
 
 
+# Define a 404 error handler
+@app.errorhandler(404)
+def page_not_found():
+    return 'Whoops! Looks like this page went on vacation!', 404
+
+
 class UserAlreadyExists(Exception):
     def __init__(self, message):
         super().__init__(message)

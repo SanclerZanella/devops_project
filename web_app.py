@@ -31,6 +31,11 @@ def stop_server():
         return f'Error stopping server: {e}'
 
 
+@app.errorhandler(404)
+def page_not_found():
+    return 'Whoops! Looks like this page went on vacation!', 404
+
+
 if __name__ == '__main__':
     app.run(
         host='127.0.0.1',
