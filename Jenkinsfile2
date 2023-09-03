@@ -43,51 +43,36 @@ pipeline {
                 }
             }
         }
+        stage('run tests') {
+            steps {
+                script {
+                    def testMode = params.TEST_MODE.toInteger()
 
-        def testMode = params.TEST_MODE.toInteger()
-
-        switch (testMode) {
-            case 1:
-                stage('run frontend test') {
-                    steps {
-                        script {
+                    switch (testMode) {
+                        case 1:
                             if (checkOs() == 'Windows') {
                                 bat 'start/min python frontend_testing.py'
                             } else {
                                 sh 'nohup python frontend_testing.py &'
                             }
-                        }
-                    }
-                }
-                break
-
-            case 2:
-                stage('run backend test') {
-                    steps {
-                        script {
+                            break
+                        case 2:
                             if (checkOs() == 'Windows') {
                                 bat 'start/min python backend_testing.py'
                             } else {
                                 sh 'nohup python backend_testing.py &'
                             }
-                        }
-                    }
-                }
-                break
-
-            case 3:
-                stage('run combined test') {
-                    steps {
-                        script {
+                            break
+                        case 3:
                             if (checkOs() == 'Windows') {
                                 bat 'start/min python combined_testing.py'
                             } else {
                                 sh 'nohup python combined_testing.py &'
                             }
-                        }
+                            break
                     }
                 }
-                break
+            }
         }
 
         stage('clear environment') {
