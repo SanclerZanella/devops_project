@@ -70,6 +70,8 @@ pipeline {
                                 sh 'nohup python combined_testing.py &'
                             }
                             break
+                        default:
+                            error "Invalid test mode selected"
                     }
                 }
             }
