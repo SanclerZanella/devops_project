@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(name: 'TEST_MODE', choices: '1\n2\n3', description: 'Select the test mode')
+    }
+
     environment {
         EMAIL_SUBJECT = 'Pipeline Status: '
     }
@@ -13,7 +17,6 @@ pipeline {
         stage('checkout') {
             steps {
                 script {
-                    properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
                     checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/SanclerZanella/git_class.git']]])
                 }
             }
@@ -40,39 +43,53 @@ pipeline {
                 }
             }
         }
-        stage('run backend test') {
-            steps {
-                script {
-                    if (checkOs() == 'Windows') {
-                        bat 'start/min python backend_testing.py'
-                    } else {
-                        sh 'nohup python backend_testing.py &'
+
+        def testMode = params.TEST_MODE.toInteger()
+
+        switch (testMode) {
+            case 1:
+                stage('run frontend test') {
+                    steps {
+                        script {
+                            if (checkOs() == 'Windows') {
+                                bat 'start/min python frontend_testing.py'
+                            } else {
+                                sh 'nohup python frontend_testing.py &'
+                            }
+                        }
                     }
                 }
-            }
-        }
-        stage('run frontend test') {
-            steps {
-                script {
-                    if (checkOs() == 'Windows') {
-                        bat 'start/min python frontend_testing.py'
-                    } else {
-                        sh 'nohup python frontend_testing.py &'
+                break
+
+            case 2:
+                stage('run backend test') {
+                    steps {
+                        script {
+                            if (checkOs() == 'Windows') {
+                                bat 'start/min python backend_testing.py'
+                            } else {
+                                sh 'nohup python backend_testing.py &'
+                            }
+                        }
                     }
                 }
-            }
-        }
-        stage('run combined test') {
-            steps {
-                script {
-                    if (checkOs() == 'Windows') {
-                        bat 'start/min python combined_testing.py'
-                    } else {
-                        sh 'nohup python combined_testing.py &'
+                break
+
+            case 3:
+                stage('run combined test') {
+                    steps {
+                        script {
+                            if (checkOs() == 'Windows') {
+                                bat 'start/min python combined_testing.py'
+                            } else {
+                                sh 'nohup python combined_testing.py &'
+                            }
+                        }
                     }
                 }
-            }
+                break
         }
+
         stage('clear environment') {
             steps {
                 script {
