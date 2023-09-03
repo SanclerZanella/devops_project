@@ -170,8 +170,8 @@ def stop_server():
 
 # Define a 404 error handler
 @app.errorhandler(404)
-def page_not_found():
-    return 'Whoops! Looks like this page went on vacation!', 404
+def page_not_found(e):
+    return f'Whoops! Looks like this page went on vacation!\n {e}', 404
 
 
 class UserAlreadyExists(Exception):
