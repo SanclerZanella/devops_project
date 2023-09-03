@@ -1,19 +1,28 @@
 pipeline {
     agent any
 
+    // Create environment variable
     environment {
+        // Re-utilised email subject
         EMAIL_SUBJECT = 'Pipeline Status: '
     }
 
     options {
+        // Discard 5 days old builds or max build of 20
         buildDiscarder(logRotator(numToKeepStr: '20', daysToKeepStr: '5'))
     }
 
     stages {
         stage('checkout') {
+            /*
+                Responsible for checking out the source code from GIT so that subsequent stages can build, test, and deploy the code.
+            */
             steps {
                 script {
+                    // Trigger the pipeline each 30 minutes
                     properties([pipelineTriggers([pollSCM('H/30 * * * *')])])
+
+                    // Define source repository
                     checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/SanclerZanella/git_class.git']]])
                 }
             }
@@ -21,6 +30,7 @@ pipeline {
         stage('run backend server') {
             steps {
                 script {
+                    // Retrieve the database credentials to run the REST API
                     withCredentials([usernamePassword(credentialsId: 'DB_Credentials', usernameVariable: 'DB_USERNAME', passwordVariable: 'DB_PASSWORD')]) {
                         if (checkOs() == 'Windows') {
                             bat 'start/min python rest_app.py \$DB_USERNAME \$DB_PASSWORD'
@@ -90,6 +100,7 @@ pipeline {
 
     post {
         success {
+            // Email notification for when the pipeline build succeeds
             emailext (
                 to: 'sanclerzjj@gmail.com',
                 subject: "${EMAIL_SUBJECT}Successful",
@@ -104,6 +115,7 @@ pipeline {
             )
         }
         failure {
+            // Email notification for when the pipeline build fails
             emailext (
                 to: 'sanclerzjj@gmail.com',
                 subject: "${EMAIL_SUBJECT}Failed",
@@ -121,6 +133,9 @@ pipeline {
 }
 
 def checkOs(){
+    /*
+        Check the system OS
+    */
     if (isUnix()) {
         def uname = sh script: 'uname', returnStdout: true
         if (uname.startsWith("Darwin")) {

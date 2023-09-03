@@ -15,13 +15,26 @@ if len(sys.argv) != 3:
     print("Usage: python script.py <db_username> <db_password>")
     sys.exit(1)
 
+# Retrieve database credentials from the sys.argv
 db_username = sys.argv[1]
 db_password = sys.argv[2]
 
 
 @app.route('/users/<user_id>', methods=["GET", "POST", "PUT", "DELETE"])
-def resta_app(user_id):
+def rest_app(user_id):
+    """
+        Description:
+            This router handles all methods request to this route, Creating, Retrieving,
+            Updating and Deleting values from the database.
+
+        Parameters:
+            * user_id - Corresponds to the user ID in the database.
+
+        Return:
+            This function returns JSON + status code.
+    """
     try:
+        # Initialise database connection
         db = ConnectDB(db_username, db_password)
         db_conn = db.connect_db()
 
@@ -29,16 +42,23 @@ def resta_app(user_id):
         response = {"Status": "ERROR", "reason": f'{e}'}
         return jsonify(response), 500
 
+    # Create database necessary tables, if they are not present in the database
     table_generator = CreateTables(db_conn)
     table_generator.create_table()
 
     if request.method == "POST":
+        '''
+            Handles POST method saving a new user in the database
+        '''
         try:
+
+            # Check if the ID is already being used in the database
             with db_conn.cursor() as cursor:
                 while True:
                     select_query = "SELECT user_id FROM users WHERE user_id = %s"
                     cursor.execute(select_query, (user_id,))
 
+                    # If the user is already being used in the database, create new user with another ID.
                     if cursor.fetchone():
                         user_id_int = int(user_id)
                         user_id_int += 1
@@ -46,9 +66,11 @@ def resta_app(user_id):
                     else:
                         break
 
+            # Retrieve the user_name from the Json payload
             data = request.get_json()
             user_name = data.get('user_name')
 
+            # Create new use in the database
             with db_conn.cursor() as cursor:
                 insert_query = "INSERT INTO users (user_id, user_name, creation_date) VALUES (%s, %s, %s)"
                 cursor.execute(insert_query, (user_id, user_name, datetime.datetime.now()))
@@ -70,13 +92,18 @@ def resta_app(user_id):
             return jsonify(response), 500
 
     elif request.method == "GET":
+        '''
+            Handles GET method retrieving any user from the database
+        '''
         try:
+            # Retrieve the user from the database using the provided ID
             with db_conn.cursor() as cursor:
                 query_data = (user_id,)
                 retrieve_query = "SELECT user_id, user_name FROM users WHERE user_id = %s"
                 cursor.execute(retrieve_query, query_data)
                 user = cursor.fetchone()
 
+            # If user is present in the database, then return successful response
             if user:
                 id_user, user_name = user
                 response = {"Status": "OK", "User_name": f"{user_name}"}
@@ -96,16 +123,23 @@ def resta_app(user_id):
             return f"General error - {e}"
 
     elif request.method == "PUT":
+        '''
+            Handles PUT method updating any user in the database
+        '''
+
         try:
+            # Check if the user is present in the database
             with db_conn.cursor() as cursor:
                 query_data = (user_id,)
                 retrieve_query = "SELECT user_id, user_name FROM users WHERE user_id = %s"
                 cursor.execute(retrieve_query, query_data)
                 user = cursor.fetchone()
 
+            # Get the new value from the JSON payload
             data = request.get_json()
             new_value = data.get('user_name')
 
+            # If user exists, then update with the new value based on the ID provided
             if user:
                 with db_conn.cursor() as cursor:
                     update_query = "UPDATE users SET user_name = %s WHERE user_id = %s"
@@ -129,6 +163,11 @@ def resta_app(user_id):
             return f"General error - {e}"
 
     elif request.method == "DELETE":
+        '''
+            Handles DELETE method deleting any user from the database
+        '''
+
+        # Check if user exists in the database
         try:
             with db_conn.cursor() as cursor:
                 query_data = (user_id,)
@@ -136,6 +175,7 @@ def resta_app(user_id):
                 cursor.execute(retrieve_query, query_data)
                 user = cursor.fetchone()
 
+            # If user exists in the database, delete it based on the ID provided
             if user:
                 with db_conn.cursor() as cursor:
                     delete_query = "DELETE FROM users WHERE user_id = %s"
@@ -161,6 +201,13 @@ def resta_app(user_id):
 
 @app.route('/stop_server')
 def stop_server():
+    """
+        Description:
+            Stop the API server.
+
+        Return:
+            Sting response with status of the operation.
+    """
     try:
         os.kill(os.getpid(), signal.CTRL_C_EVENT)
         return 'Server Stopped'
@@ -171,15 +218,36 @@ def stop_server():
 # Define a 404 error handler
 @app.errorhandler(404)
 def page_not_found(e):
+    """
+        Description:
+            Friendly message when the status code is 404.
+
+        Return:
+            Sting response with status of the operation.
+    """
     return f'Whoops! Looks like this page went on vacation!\n {e}', 404
 
 
 class UserAlreadyExists(Exception):
+    """
+        Description:
+            Custom exception for when user already exists in the database
+
+        Parameters:
+            * message - String describing the exception.
+    """
     def __init__(self, message):
         super().__init__(message)
 
 
 class UserDoesNotExist(Exception):
+    """
+        Description:
+            Custom exception for when user does not exist in the database
+
+        Parameters:
+            * message - String describing the exception.
+    """
     def __init__(self, message):
         super().__init__(message)
 
