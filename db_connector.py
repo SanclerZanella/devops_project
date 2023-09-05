@@ -16,7 +16,7 @@ class ConnectDB:
         Object Properties:
             * self.db_host - Host to access the database.
             * self.db_user - Username to access the database, assigned by the class parameter 'username'.
-            * self.db_password - Password to access the database, assigned by the class parameter 'username'.
+            * self.db_password - Password to access the database, assigned by the class parameter 'password'.
             * self.db_name - Database's name to access the database.
 
         Methods:

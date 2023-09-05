@@ -8,3 +8,4 @@ node_modules/
 unit
 pytest.ini
 conftest.py
+env.py
