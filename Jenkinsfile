@@ -102,7 +102,7 @@ pipeline {
         stage('build an push docker image') {
             steps {
                 script {
-                    dockerImage = docker build -f Dockerfile.rest_app -t registry + ":$BUILD_NUMBER" .
+                    dockerImage = docker build -f Dockerfile.rest_app registry + ":$BUILD_NUMBER" .
                     docker.withRegistry('', registryCredential) {
                         dockerImage.push() // push image to hub
                     }
