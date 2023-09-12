@@ -120,6 +120,28 @@ pipeline {
                 }
             }
         }
+        stage('Run Docker Compose') {
+            steps {
+                script {
+                    if (checkOs() == 'Windows') {
+                        bat 'docker-compose up -d'
+                    } else {
+                        sh 'docker-compose up -d'
+                    }
+                }
+            }
+        }
+        stage('Clean Environment') {
+            steps {
+                script {
+                    if (checkOs() == 'Windows') {
+                        bat 'docker-compose down && docker rmi %registry%:$BUILD_NUMBER'
+                    } else {
+                        sh 'docker-compose down && docker rmi $registry:$BUILD_NUMBER'
+                    }
+                }
+            }
+        }
     }
 
     post {

@@ -19,7 +19,7 @@ def get_user_data(user_id):
         HTML elements in case of successful response or String containing exception message in case
         of failing response.
     """
-    get_user_endpoint = f"http://127.0.0.1:5000/users/{user_id}"
+    get_user_endpoint = f"http://rest_app:5000/users/{user_id}"
 
     try:
         # Make a GET request to the REST API to retrieve a user returning the HTML element
@@ -64,7 +64,7 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     app.run(
-        host='127.0.0.1',
+        host='0.0.0.0',
         port=5001,
         debug=True
     )
