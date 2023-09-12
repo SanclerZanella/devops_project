@@ -6,7 +6,7 @@ services:
       - PASSWORD=${DB_PASSWORD}
     build:
       context: .
-      dockerfile: Dockerfile.rest_app
+      dockerfile: Dockerfile
       args:
         DB_USER: ${DB_USERNAME}
         DB_PASS: ${DB_PASSWORD}
@@ -14,11 +14,3 @@ services:
       - "5000:5000"
     expose:
       - 5000
-  web_app:
-    build:
-      context: .
-      dockerfile: Dockerfile.web_app
-    ports:
-      - "5001:5001"
-    expose:
-      - 5001
