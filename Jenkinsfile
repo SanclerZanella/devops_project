@@ -5,6 +5,9 @@ pipeline {
     environment {
         // Re-utilised email subject
         EMAIL_SUBJECT = 'Pipeline Status: '
+        registry = "sanclerzanella/my-repo"
+        registryCredential = 'docker_hub'
+        dockerImage = ""
     }
 
     options {
@@ -96,6 +99,16 @@ pipeline {
                 }
             }
         }
+        stage('build an push docker image') {
+            steps {
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    docker.withRegistry("", registryCredential){
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
     }
 
     post {
@@ -128,6 +141,13 @@ pipeline {
                 presendScript: 'import jenkins.plugins.mailer.tasks.MimeMessageBuilder\n\nmsg.setContent(msg.getContent(), "text/html")',
                 from: 'sanclerzjj@gmail.com'
             )
+        }
+        always {
+            if (checkOs() == 'Windows') {
+                bat 'docker rmi $registry:$BUILD_NUMBER'
+            } else {
+                sh 'docker rmi $registry:$BUILD_NUMBER'
+            }
         }
     }
 }
