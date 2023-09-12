@@ -135,9 +135,9 @@ pipeline {
             steps {
                 script {
                     if (checkOs() == 'Windows') {
-                        bat 'docker-compose down && docker system prune -a
+                        bat 'docker-compose down && docker system prune -a'
                     } else {
-                        sh 'docker-compose down && docker system prune -a
+                        sh 'docker-compose down && docker system prune -a'
                     }
                 }
             }
