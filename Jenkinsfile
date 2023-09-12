@@ -131,13 +131,13 @@ pipeline {
                 }
             }
         }
-        stage('Clean Environment') {
+        stage('clean docker environment') {
             steps {
                 script {
                     if (checkOs() == 'Windows') {
-                        bat 'docker-compose down && docker rmi %registry%:$BUILD_NUMBER'
+                        bat 'docker-compose down && docker system prune -a
                     } else {
-                        sh 'docker-compose down && docker rmi $registry:$BUILD_NUMBER'
+                        sh 'docker-compose down && docker system prune -a
                     }
                 }
             }
