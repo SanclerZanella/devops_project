@@ -9,3 +9,4 @@ unit
 pytest.ini
 conftest.py
 env.py
+.env

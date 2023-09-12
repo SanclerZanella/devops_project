@@ -109,6 +109,17 @@ pipeline {
                 }
             }
         }
+        stage('set version') {
+            steps {
+                script {
+                    if (checkOs() == 'Windows') {
+                        bat 'echo IMAGE_TAG=%BUILD_NUMBER% > .env'
+                    } else {
+                        sh 'echo IMAGE_TAG=%BUILD_NUMBER% > .env'
+                    }
+                }
+            }
+        }
     }
 
     post {
