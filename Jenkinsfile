@@ -145,7 +145,7 @@ pipeline {
         always {
             script {
                 if (checkOs() == 'Windows') {
-                    bat 'docker rmi $registry:$BUILD_NUMBER'
+                    bat 'docker rmi ${registry}:${BUILD_NUMBER}'
                 } else {
                     sh 'docker rmi $registry:$BUILD_NUMBER'
                 }
