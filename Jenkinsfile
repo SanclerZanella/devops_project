@@ -159,9 +159,9 @@ pipeline {
 
                     // Execute the Helm command
                     if (checkOs() == 'Windows') {
-                        bat 'helm upgrade --install my-release ./helm-chart --set image.version=my_repo:${BUILD_NUMBER}'
+                        bat 'helm upgrade --install my-release-helm-chart ./helm-chart --set image.version=my_repo:${BUILD_NUMBER}'
                     } else {
-                        sh 'helm upgrade --install my-release ./helm-chart --set image.version=my_repo:${BUILD_NUMBER}'
+                        sh 'helm upgrade --install my-release-helm-chart ./helm-chart --set image.version=my_repo:${BUILD_NUMBER}'
                     }
                 }
             }
@@ -196,9 +196,9 @@ pipeline {
                 script {
                     // Execute the Helm delete command
                     if (checkOs() == 'Windows') {
-                        bat 'helm delete my-release'
+                        bat 'helm delete my-release-helm-chart'
                     } else {
-                        sh 'helm delete my-release'
+                        sh 'helm delete my-release-helm-chart'
                     }
                 }
             }
