@@ -156,13 +156,12 @@ pipeline {
         stage('Deploy Helm Chart') {
             steps {
                 script {
-                    def imageVersion = "my_repo:${BUILD_NUMBER}"
 
                     // Execute the Helm command
                     if (checkOs() == 'Windows') {
-                        bat 'helm upgrade --install my-release ./charts --set image.version=${imageVersion}'
+                        bat 'helm upgrade --install my-release ./charts --set image.version=my_repo:${BUILD_NUMBER}'
                     } else {
-                        sh 'helm upgrade --install my-release ./charts --set image.version=${imageVersion}'
+                        sh 'helm upgrade --install my-release ./charts --set image.version=my_repo:${BUILD_NUMBER}'
                     }
                 }
             }
