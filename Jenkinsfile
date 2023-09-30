@@ -153,6 +153,57 @@ pipeline {
                 }
             }
         }
+        stage('Deploy Helm Chart') {
+            steps {
+                script {
+                    def imageVersion = "my_repo:${BUILD_NUMBER}"
+
+                    // Execute the Helm command
+                    if (checkOs() == 'Windows') {
+                        bat 'helm upgrade --install my-release ./path/to/chart --set image.version=${imageVersion}'
+                    } else {
+                        sh 'helm upgrade --install my-release ./path/to/chart --set image.version=${imageVersion}'
+                    }
+                }
+            }
+        }
+        stage('Write Service URL to File') {
+            steps {
+                script {
+
+                    // Execute the command to write the service URL to the file
+                    if (checkOs() == 'Windows') {
+                        bat 'minikube service hello-python-service --url > k8s_url.txt'
+                    } else {
+                        sh 'minikube service hello-python-service --url > k8s_url.txt'
+                    }
+                }
+            }
+        }
+        stage('Test Deployed App') {
+            steps {
+                script {
+                    // Execute the Python script for testing
+                    if (checkOs() == 'Windows') {
+                        bat 'python K8S_backend_testing.py'
+                    } else {
+                        sh 'python K8S_backend_testing.py'
+                    }
+                }
+            }
+        }
+        stage('Clean HELM Environment') {
+            steps {
+                script {
+                    // Execute the Helm delete command
+                    if (checkOs() == 'Windows') {
+                        bat 'helm delete my-release'
+                    } else {
+                        sh 'helm delete my-release'
+                    }
+                }
+            }
+        }
     }
 
     post {
