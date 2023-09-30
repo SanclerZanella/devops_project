@@ -172,9 +172,9 @@ pipeline {
 
                     // Execute the command to write the service URL to the file
                     if (checkOs() == 'Windows') {
-                        bat 'minikube service hello-python-service --url > k8s_url.txt'
+                        bat 'minikube service my-release-helm-chart --url > k8s_url.txt'
                     } else {
-                        sh 'minikube service hello-python-service --url > k8s_url.txt'
+                        sh 'minikube service my-release-helm-chart --url > k8s_url.txt'
                     }
                 }
             }
