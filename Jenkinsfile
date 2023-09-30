@@ -160,9 +160,9 @@ pipeline {
 
                     // Execute the Helm command
                     if (checkOs() == 'Windows') {
-                        bat 'helm upgrade --install my-release ./path/to/chart --set image.version=${imageVersion}'
+                        bat 'helm upgrade --install my-release ./charts --set image.version=${imageVersion}'
                     } else {
-                        sh 'helm upgrade --install my-release ./path/to/chart --set image.version=${imageVersion}'
+                        sh 'helm upgrade --install my-release ./charts --set image.version=${imageVersion}'
                     }
                 }
             }
