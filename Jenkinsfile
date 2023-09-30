@@ -169,7 +169,7 @@ pipeline {
         stage('Write Service URL to File') {
             steps {
                 script {
-                    sleep(time: 60, unit: 'SECONDS')
+                    sleep(time: 180, unit: 'SECONDS')
                     // Execute the command to write the service URL to the file
                     if (checkOs() == 'Windows') {
                         bat 'minikube service flask-app-service --url > k8s_url.txt'
