@@ -131,6 +131,17 @@ pipeline {
                 }
             }
         }
+        stage('run docker test') {
+            steps {
+                script {
+                    if (checkOs() == 'Windows') {
+                        bat 'start/min python docker_testing.py'
+                    } else {
+                        sh 'nohup python docker_backend_testing.py &'
+                    }
+                }
+            }
+        }
         stage('clean docker environment') {
             steps {
                 script {
