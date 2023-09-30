@@ -159,9 +159,9 @@ pipeline {
 
                     // Execute the Helm command
                     if (checkOs() == 'Windows') {
-                        bat 'helm upgrade --install my-release-helm-chart ./helm-chart --set image.version=my_repo:${BUILD_NUMBER}'
+                        bat 'helm upgrade --install flask-app-service ./helm-chart --namespace default'
                     } else {
-                        sh 'helm upgrade --install my-release-helm-chart ./helm-chart --set image.version=my_repo:${BUILD_NUMBER}'
+                        sh 'helm upgrade --install flask-app-service ./helm-chart --namespace default'
                     }
                 }
             }
@@ -172,9 +172,9 @@ pipeline {
 
                     // Execute the command to write the service URL to the file
                     if (checkOs() == 'Windows') {
-                        bat 'minikube service my-release-helm-chart --url > k8s_url.txt'
+                        bat 'minikube service flask-app-service --url > k8s_url.txt'
                     } else {
-                        sh 'minikube service my-release-helm-chart --url > k8s_url.txt'
+                        sh 'minikube service flask-app-service --url > k8s_url.txt'
                     }
                 }
             }
@@ -196,9 +196,9 @@ pipeline {
                 script {
                     // Execute the Helm delete command
                     if (checkOs() == 'Windows') {
-                        bat 'helm delete my-release-helm-chart'
+                        bat 'helm delete flask-app-service'
                     } else {
-                        sh 'helm delete my-release-helm-chart'
+                        sh 'helm delete flask-app-service'
                     }
                 }
             }
