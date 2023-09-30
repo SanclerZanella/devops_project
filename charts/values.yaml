@@ -1,6 +1,0 @@
-replicaCount: 1
-image:
-  repository: your-docker-hub-username/your-flask-app-image
-  tag: latest
-containerPort: 5000
-serviceType: LoadBalancer
