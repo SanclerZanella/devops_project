@@ -172,9 +172,9 @@ pipeline {
                     sleep(time: 120, unit: 'SECONDS')
                     // Execute the command to write the service URL to the file
                     if (checkOs() == 'Windows') {
-                        bat 'minikube service flask-app-service --url > k8s_url.txt & echo Y', returnStatus: true'
+                        bat 'minikube service flask-app-service --url > k8s_url.txt & echo Y, returnStatus: true'
                     } else {
-                        sh 'minikube service flask-app-service --url > k8s_url.txt & echo Y', returnStatus: true'
+                        sh 'minikube service flask-app-service --url > k8s_url.txt & echo Y, returnStatus: true'
                     }
                 }
             }
