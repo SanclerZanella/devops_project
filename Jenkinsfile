@@ -185,7 +185,7 @@ pipeline {
                     // Execute the command to write the service URL to the file
                     if (checkOs()) {
                         // Use Windows-specific command here
-                        bat 'kubectl get pod flask-app-service -o jsonpath="{.status.phase}" > k8s_pod_status.txt'
+                        bat(script: 'minikube service flask-app-service --url 1>k8s_url.txt & echo Y', returnStatus: true)
 
                         // Send Ctrl+C signal to terminate the process (if needed)
                         bat 'taskkill /F /IM minikube.exe'
@@ -289,9 +289,13 @@ def checkPodStatus() {
     */
 
     podName = 'flask-app-service'
+    podStatus = ""
 
-    // Use kubectl to check the pod's status
-    podStatus = sh(script: "kubectl get pod ${podName} -o jsonpath='{.status.phase}'", returnStdout: true).trim()
+    if (checkOs() == 'Windows') {
+        podStatus = bat(script: "kubectl get pod ${podName} -o jsonpath='{.status.phase}'", returnStatus: true).trim()
+    } else {
+        podStatus = sh(script: "kubectl get pod ${podName} -o jsonpath='{.status.phase}'", returnStdout: true).trim()
+    }
 
     return podStatus == 'ContainerCreating'
 }
