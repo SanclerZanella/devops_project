@@ -286,10 +286,10 @@ def checkPodStatus() {
         Function to check the pod's status
     */
 
-    def podName = 'flask-app-service'
+    podName = 'flask-app-service'
 
     // Use kubectl to check the pod's status
-    def podStatus = sh(script: "kubectl get pod ${podName} -o jsonpath='{.status.phase}'", returnStdout: true).trim()
+    podStatus = sh(script: "kubectl get pod ${podName} -o jsonpath='{.status.phase}'", returnStdout: true).trim()
 
     return podStatus == 'ContainerCreating'
 }
