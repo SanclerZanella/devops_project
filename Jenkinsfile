@@ -169,7 +169,6 @@ pipeline {
         stage('Write Service URL to File') {
             steps {
                 script {
-
                     timeout = 600 // Maximum wait time in seconds
                     pollingInterval = 10 // Check every 10 seconds
 
@@ -184,13 +183,15 @@ pipeline {
                     }
 
                     // Execute the command to write the service URL to the file
-                    if (checkOs() == 'Windows') {
+                    if (checkOs()) {
+                        // Use Windows-specific command here
                         bat 'kubectl get pod flask-app-service -o jsonpath="{.status.phase}" > k8s_pod_status.txt'
 
-                        // Send Ctrl+C signal to terminate the process
+                        // Send Ctrl+C signal to terminate the process (if needed)
                         bat 'taskkill /F /IM minikube.exe'
                     } else {
-                        sh 'minikube service flask-app-service --url > k8s_url.txt'
+                        // Use Unix/Linux command here
+                        sh 'kubectl get pod flask-app-service -o jsonpath="{.status.phase}" > k8s_pod_status.txt'
                     }
                 }
             }
