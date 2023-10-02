@@ -191,6 +191,7 @@ pipeline {
                         bat 'taskkill /F /IM minikube.exe'
                     } else {
                         sh 'minikube service flask-app-service --url > k8s_url.txt'
+                    }
                 }
             }
         }
