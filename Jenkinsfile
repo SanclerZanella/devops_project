@@ -185,7 +185,7 @@ pipeline {
 
                     // Execute the command to write the service URL to the file
                     if (checkOs() == 'Windows') {
-                        bat(script: 'minikube service flask-app-service --url 1>k8s_url.txt & echo N', returnStatus: true)
+                        bat 'kubectl get pod flask-app-service -o jsonpath="{.status.phase}" > k8s_pod_status.txt'
 
                         // Send Ctrl+C signal to terminate the process
                         bat 'taskkill /F /IM minikube.exe'
