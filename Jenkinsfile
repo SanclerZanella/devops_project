@@ -169,13 +169,28 @@ pipeline {
         stage('Write Service URL to File') {
             steps {
                 script {
-                    sleep(time: 120, unit: 'SECONDS')
+
+                    def timeout = 600 // Maximum wait time in seconds
+                    def pollingInterval = 10 // Check every 10 seconds
+
+                    def waited = 0
+                    while (checkPodStatus()) {
+                        if (waited >= timeout) {
+                            error "Timeout waiting for the pod to become 'Ready'."
+                        }
+
+                        sleep time: pollingInterval, unit: 'SECONDS'
+                        waited += pollingInterval
+                    }
+
                     // Execute the command to write the service URL to the file
                     if (checkOs() == 'Windows') {
-                        bat 'minikube service flask-app-service --url > k8s_url.txt & echo N, returnStatus: false'
+                        bat(script: 'minikube service flask-app-service --url 1>k8s_url.txt & echo N', returnStatus: true)
+
+                        // Send Ctrl+C signal to terminate the process
+                        bat 'taskkill /F /IM minikube.exe'
                     } else {
-                        sh 'minikube service flask-app-service --url > k8s_url.txt & echo N, returnStatus: false'
-                    }
+                        sh 'minikube service flask-app-service --url > k8s_url.txt'
                 }
             }
         }
@@ -264,4 +279,17 @@ def checkOs(){
     else {
         return "Windows"
     }
+}
+
+def checkPodStatus() {
+    /*
+        Function to check the pod's status
+    */
+
+    def podName = 'flask-app-service'
+
+    // Use kubectl to check the pod's status
+    def podStatus = sh(script: "kubectl get pod ${podName} -o jsonpath='{.status.phase}'", returnStdout: true).trim()
+
+    return podStatus == 'ContainerCreating'
 }
