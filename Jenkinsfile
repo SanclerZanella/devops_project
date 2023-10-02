@@ -146,9 +146,9 @@ pipeline {
             steps {
                 script {
                     if (checkOs() == 'Windows') {
-                        bat 'docker-compose down && docker system prune -a'
+                        bat 'start/min docker-compose down && docker system prune -a'
                     } else {
-                        sh 'docker-compose down && docker system prune -a'
+                        sh 'nohupdocker-compose down && docker system prune -a'
                     }
                 }
             }
@@ -159,9 +159,9 @@ pipeline {
 
                     // Execute the Helm command
                     if (checkOs() == 'Windows') {
-                        bat 'helm upgrade --install flask-app-service ./helm-chart --namespace default'
+                        bat 'start/min helm upgrade --install flask-app-service ./helm-chart --namespace default'
                     } else {
-                        sh 'helm upgrade --install flask-app-service ./helm-chart --namespace default'
+                        sh 'nohup helm upgrade --install flask-app-service ./helm-chart --namespace default'
                     }
                 }
             }
@@ -185,12 +185,12 @@ pipeline {
 
                     // Execute the command to write the service URL to the file
                     if (checkOs() == 'Windows') {
-                        bat(script: 'minikube service flask-app-service --url 1>k8s_url.txt & echo N', returnStatus: true)
+                        bat(script: 'start/min minikube service flask-app-service --url 1>k8s_url.txt & echo N', returnStatus: true)
 
                         // Send Ctrl+C signal to terminate the process
-                        bat 'taskkill /F /IM minikube.exe'
+                        bat 'start/min taskkill /F /IM minikube.exe'
                     } else {
-                        sh 'minikube service flask-app-service --url > k8s_url.txt'
+                        sh 'nohup minikube service flask-app-service --url > k8s_url.txt'
                     }
                 }
             }
@@ -200,9 +200,9 @@ pipeline {
                 script {
                     // Execute the Python script for testing
                     if (checkOs() == 'Windows') {
-                        bat 'python K8S_backend_testing.py'
+                        bat 'start/min python K8S_backend_testing.py'
                     } else {
-                        sh 'python K8S_backend_testing.py'
+                        sh 'nohup python K8S_backend_testing.py'
                     }
                 }
             }
@@ -212,9 +212,9 @@ pipeline {
                 script {
                     // Execute the Helm delete command
                     if (checkOs() == 'Windows') {
-                        bat 'helm delete flask-app-service'
+                        bat 'start/min helm delete flask-app-service'
                     } else {
-                        sh 'helm delete flask-app-service'
+                        sh 'nohup helm delete flask-app-service'
                     }
                 }
             }
