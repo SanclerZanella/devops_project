@@ -288,12 +288,11 @@ def checkPodStatus() {
         Function to check the pod's status
     */
 
-    podName = 'flask-app-service'
     podStatus = ""
 
     if (checkOs() == 'Windows') {
         podStatus = powershell(returnStatus: true, script: """
-            \$status = kubectl get pod -l app=${serviceName} -o jsonpath='{.status.phase}'
+            \$status = kubectl get pod -l app=flask-app-service -o jsonpath='{.status.phase}'
             Write-Host \$status
         """).trim()
     } else {
