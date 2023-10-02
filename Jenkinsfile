@@ -292,9 +292,9 @@ def checkPodStatus() {
     podStatus = ""
 
     if (checkOs() == 'Windows') {
-        podStatus = bat(script: "kubectl get pod -l app=${serviceName} -o jsonpath='{.status.phase}'", returnStatus: true).trim()
+        podStatus = bat(script: "kubectl get pod -l app=flask-app-service -o jsonpath='{.status.phase}'", returnStatus: true).trim()
     } else {
-        podStatus = sh(script: "kubectl get pod -l app=${serviceName} -o jsonpath='{.status.phase}'", returnStdout: true).trim()
+        podStatus = sh(script: "kubectl get pod -l app=flask-app-service -o jsonpath='{.status.phase}'", returnStdout: true).trim()
     }
 
     return podStatus == 'ContainerCreating'
