@@ -170,10 +170,10 @@ pipeline {
             steps {
                 script {
 
-                    def timeout = 600 // Maximum wait time in seconds
-                    def pollingInterval = 10 // Check every 10 seconds
+                    timeout = 600 // Maximum wait time in seconds
+                    pollingInterval = 10 // Check every 10 seconds
 
-                    def waited = 0
+                    waited = 0
                     while (checkPodStatus()) {
                         if (waited >= timeout) {
                             error "Timeout waiting for the pod to become 'Ready'."
